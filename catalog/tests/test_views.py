@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
@@ -7,14 +7,15 @@ from catalog.api.serializers import BookCreateSerializer, BookSerializer
 from catalog.api.views import BookAPIViewSet
 from catalog.models import Author, Genre, Book, BookLink
 
+User = get_user_model()
+
 
 class TestPermissionsOnViewSet(APITestCase):
     url = None
     create_data = None
-    model = None
 
     # Ожидаемые коды — можно переопределять в подклассах
-    anonymous_list_status = status.HTTP_401_UNAUTHORIZED
+    anonymous_status = status.HTTP_401_UNAUTHORIZED
     authenticated_create_status = status.HTTP_403_FORBIDDEN
     admin_create_status = status.HTTP_201_CREATED
 
@@ -26,11 +27,10 @@ class TestPermissionsOnViewSet(APITestCase):
     def get_client(self):
         return APIClient()
 
-    def test_anonymous_cannot_create_or_get_expected_status(self):
-        assert self.url, "Подкласс должен задать self.url"
+    def test_anonymous(self):
         client = self.get_client()
         resp = client.get(self.url)
-        self.assertEqual(resp.status_code, self.anonymous_list_status)
+        self.assertEqual(resp.status_code, self.anonymous_status)
 
     def test_authenticated_user_can_list_but_cannot_create(self):
         client = self.get_client()
@@ -48,26 +48,24 @@ class TestPermissionsOnViewSet(APITestCase):
         resp = client.post(self.url, self.create_data or {}, format='json')
         self.assertEqual(resp.status_code, self.admin_create_status)
 
-        if self.model and resp.status_code == status.HTTP_201_CREATED:
+        if resp.status_code == status.HTTP_201_CREATED:
             created_name = resp.data.get('name')
             self.assertIsNotNone(created_name)
 
 
-class AuthorAPIViewSetTest(TestPermissionsOnViewSet):
+class AuthorAPIViewSetTestCase(TestPermissionsOnViewSet):
     def setUp(self):
         self.url = reverse('catalog:authors-list')
         self.create_data = {"name": "New Author"}
-        self.model = Author
 
 
-class GenreAPIViewSetTest(TestPermissionsOnViewSet):
+class GenreAPIViewSetTestCase(TestPermissionsOnViewSet):
     def setUp(self):
         self.url = reverse('catalog:genres-list')
         self.create_data = {"name": "New Genre"}
-        self.model = Author
 
 
-class BookAPIViewSetTest(TestPermissionsOnViewSet):
+class BookAPIViewSetTestCase(TestPermissionsOnViewSet):
     def setUp(self):
         self.author = Author.objects.create(name="Author X")
         self.genre = Genre.objects.create(name="Genre Y")
@@ -78,7 +76,6 @@ class BookAPIViewSetTest(TestPermissionsOnViewSet):
         self.url = reverse('catalog:books-list')
         self.create_data = {"name": "Book 1", "authors": [{'name': 'Test Author'}], "genres": [{'name': 'Test Genre'}],
                             "book_links": [{'link': "http://x.com"}]}
-        self.model = Book
 
     def test_download_action_returns_links(self):
         self.client.login(username="user", password="1234")
