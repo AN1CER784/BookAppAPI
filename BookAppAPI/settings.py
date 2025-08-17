@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
     'catalog',
     'library',
-
+    'reviews',
 
 ]
 
