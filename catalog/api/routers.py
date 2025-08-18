@@ -4,15 +4,15 @@ from BookAppAPI.custom_router import EnhancedAPIRouter
 from catalog.api.views import BookAPIViewSet, AuthorAPIViewSet, GenreAPIViewSet
 
 
-class HubAPIRootView(APIRootView):
-    """Корневой view для апи."""
+class CatalogAPIRootView(APIRootView):
+    """Catalog view для апи."""
 
-    __doc__ = 'Приложение catalog'
+    __doc__ = 'Приложение каталога'
     name = 'catalog'
 
 
 router = EnhancedAPIRouter()
-router.APIRootView = HubAPIRootView
+router.APIRootView = CatalogAPIRootView
 
 router.register(r"books", BookAPIViewSet, 'books')
 router.register(r"authors", AuthorAPIViewSet, 'authors')

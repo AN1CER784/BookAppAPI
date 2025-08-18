@@ -6,9 +6,9 @@ from reviews.api.views import ReviewViewSet, ReplyViewSet, ReviewVoteViewSet, Re
 
 
 class ReviewsAPIRootView(APIRootView):
-    """Корневой view для апи."""
+    """Review view для апи."""
 
-    __doc__ = 'Приложение reviews'
+    __doc__ = 'Приложение отзывов'
     name = 'reviews'
 
 

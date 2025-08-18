@@ -2,8 +2,8 @@ import asyncio
 
 import aiohttp
 from django.core.management import BaseCommand
-from catalog.parser_service import Parser
-from catalog.serializers import BookCreateSerializer
+from catalog.parser_service import ParserService
+from catalog.api.serializers import BookCreateSerializer
 from catalog.utils import serializer_save
 
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         asyncio.run(self.run_parser())
 
     async def run_parser(self):
-        parser = Parser()
+        parser = ParserService()
         async with aiohttp.ClientSession() as session:
             books = await parser.parsing(session)
             for book in books:

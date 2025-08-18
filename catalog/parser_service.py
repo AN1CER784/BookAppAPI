@@ -1,6 +1,8 @@
 import asyncio
 import logging
+from typing import Optional, Union
 
+import aiohttp
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
@@ -12,13 +14,17 @@ header = {
 }
 
 
-class Parser:
+class ParserService:
+    """Сервис для парсинга флибусты"""
     def __init__(self):
         self.site = "https://flibusta.is"
         logger.debug(f"Initialized parser with site={self.site}")
 
     @staticmethod
-    async def get_html_with_retry(session, url, max_retries=3):
+    async def get_html_with_retry(session: aiohttp.ClientSession, url: str, max_retries: int = 3) -> Optional[str]:
+        """
+        Асинхронно получает HTML с повторными попытками
+        """
         logger.info(f"Fetching URL: {url} with up to {max_retries} retries")
         for attempt in range(1, max_retries + 1):
             try:
@@ -34,7 +40,12 @@ class Parser:
         logger.error(f"Failed to fetch URL after {max_retries} attempts: {url}")
         return None
 
-    async def get_books(self, html, page=False):
+    async def get_books(
+        self, html: str, page: bool = False
+    ) -> Union[list[str], list[tuple[str, list[str], list[str], list[str], str]]]:
+        """
+        Парсит HTML и возвращает книги
+        """
         logger.info(f"Parsing HTML for catalog (page_mode={page})")
         result = []
         soup = BeautifulSoup(html, 'html.parser')
@@ -70,7 +81,11 @@ class Parser:
             result.extend(books_url)
         return result
 
-    async def get_book_links(self, session, links):
+    async def get_book_links(self, session: aiohttp.ClientSession, links: list[str]) -> list[
+        tuple[str, list[str], list[str], list[str], str]]:
+        """
+        Получает детальную информацию о книгах по списку ссылок
+        """
         logger.info(f"Getting detailed book info for {len(links)} links")
         result = []
         for idx, link in enumerate(links, start=1):
@@ -84,7 +99,11 @@ class Parser:
                 logger.warning(f"Skipping link due to fetch failure: {link}")
         return result
 
-    async def parsing(self, session):
+    async def parsing(self, session: aiohttp.ClientSession) -> Union[
+        str, list[tuple[str, list[str], list[str], list[str], str]]]:
+        """
+        Полный процесс парсинга
+        """
         logger.info("Starting full parsing process")
         start_url = f"{self.site}/stat/b"
         html = await self.get_html_with_retry(session, start_url)

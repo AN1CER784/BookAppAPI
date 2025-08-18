@@ -5,9 +5,9 @@ from library.api.views import LibraryItemViewSet
 
 
 class LibraryAPIRootView(APIRootView):
-    """Корневой view для апи."""
+    """Library view для апи."""
 
-    __doc__ = 'Приложение library'
+    __doc__ = 'Приложение библиотеки'
     name = 'library'
 
 
