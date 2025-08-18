@@ -48,7 +48,7 @@ class RecommendationService:
 
         return users
 
-    def _get_candidate_books(self, similar_users) -> QuerySet[Book]:
+    def _get_candidate_books(self, similar_users: QuerySet[User]) -> QuerySet[Book]:
         """Берём книги похожих пользователей"""
         return Book.objects.filter(
             library_item__user__in=similar_users
