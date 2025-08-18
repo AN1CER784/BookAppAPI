@@ -1,4 +1,5 @@
 from django.db import transaction
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -95,6 +96,7 @@ class BookSerializer(serializers.ModelSerializer):
     )
     book_links = serializers.SerializerMethodField()
 
+    @extend_schema_field(serializers.CharField())
     def get_book_links(self, obj):
         request = self.context.get('request')
         return reverse('catalog:books-download', kwargs={'pk': obj.pk}, request=request)

@@ -3,13 +3,14 @@ from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from catalog.api.serializers import BookCreateSerializer, BookLinkSerializer, BookSerializer
 from catalog.filters import BookFilter
 from catalog.models import Book
 from catalog.permissions import IsAdminOrAuthenticatedReadOnly
-from catalog.api.serializers import BookCreateSerializer, BookLinkSerializer, BookSerializer
+from common.mixins import AutoSchemaMixin
 
 
-class BookAPIViewSet(viewsets.ModelViewSet):
+class BookAPIViewSet(AutoSchemaMixin, viewsets.ModelViewSet):
     """
     ViewSet для работы с книгами
     """
@@ -20,6 +21,7 @@ class BookAPIViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'authors__name', 'genres__name']
     ordering_fields = ['name', 'authors__name', 'genres__name']
+    tags = ['catalog/books']
 
     @action(methods=['get'], detail=True, serializer_class=BookLinkSerializer)
     def download(self, request, pk):

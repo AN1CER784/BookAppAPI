@@ -4,17 +4,19 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from common.mixins import AutoSchemaMixin
 from library.models import LibraryItem, Progress
 from library.api.serializers import LibraryItemSerializer, ProgressSerializer
 
 
-class LibraryItemViewSet(viewsets.ModelViewSet):
+class LibraryItemViewSet(AutoSchemaMixin, viewsets.ModelViewSet):
     """
     ViewSet для работы с айтемами библиотеки
     """
     queryset = LibraryItem.objects.all()
     serializer_class = LibraryItemSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    tags = ['library/books']
 
     def get_queryset(self):
         return LibraryItem.objects.filter(user=self.request.user).select_related('library_item_progress', 'book')
