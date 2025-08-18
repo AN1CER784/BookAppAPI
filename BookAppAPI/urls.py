@@ -23,6 +23,7 @@ from BookAppAPI.settings import DEBUG
 from catalog.api.routers import router as catalog_router
 from library.api.routers import router as library_router
 from reviews.api.routers import router as reviews_router
+from recommendations.api.routers import router as recommendations_router
 
 router = EnhancedAPIRouter()
 
@@ -30,6 +31,7 @@ router = EnhancedAPIRouter()
 router.register('catalog', catalog_router, basename="catalog")
 router.register('library', library_router, basename="library")
 router.register('feedback', reviews_router, basename="feedback")
+router.register('recommendations', recommendations_router, basename="recommendations")
 
 urlpatterns = [
     path('admin/', admin.site.urls),

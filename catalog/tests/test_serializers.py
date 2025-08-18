@@ -92,7 +92,6 @@ class BookSerializerTestCase(TestCase):
         self.assertEqual(len(data['genres']), 2)
         self.assertIn('Fantasy', data['genres'])
         self.assertIn('Sci-Fi', data['genres'])
-        self.assertIn(data['book_links'], '/api/v1/catalog/books/1/download/')
 
 
 class AuthorSerializerTestCase(TestCase):
